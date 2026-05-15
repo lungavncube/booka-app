@@ -1,47 +1,71 @@
 'use client'
 
 import { useState } from 'react'
-import { signUp } from '@/services/auth'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
 export default function SignupPage() {
+  const router = useRouter()
+
+  const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
 
-  const handleSignup = async (e: any) => {
-    e.preventDefault()
-
-    const { error } = await signUp(email, password)
+  async function handleSignup() {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          name,
+        },
+      },
+    })
 
     if (error) {
       alert(error.message)
-    } else {
-      alert('Account created successfully 🎉')
+      return
     }
+
+    router.push('/dashboard')
   }
-
   return (
-    <div className="p-10 max-w-md mx-auto">
-      <h1 className="text-3xl mb-5">Create Account</h1>
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
+      <div className="bg-white w-full max-w-md rounded-[32px] p-10 shadow-xl border border-slate-200">
+        <h1 className="text-4xl font-bold text-slate-900">
+          Create account
+        </h1>
 
-      <form onSubmit={handleSignup} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          className="border p-2 w-full"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div className="mt-8 space-y-5">
+          <input
+            placeholder="Full name"
+            className="w-full border border-slate-300 rounded-2xl px-5 py-4"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="border p-2 w-full"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <input
+            placeholder="Email"
+            className="w-full border border-slate-300 rounded-2xl px-5 py-4"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <button className="bg-black text-white p-2 w-full">
-          Sign Up
-        </button>
-      </form>
-    </div>
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full border border-slate-300 rounded-2xl px-5 py-4"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <button
+            onClick={handleSignup}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-semibold"
+          >
+            Create Account
+          </button>
+        </div>
+      </div>
+    </main>
   )
 }

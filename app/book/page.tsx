@@ -1,62 +1,54 @@
 'use client'
 
-import { useState } from 'react'
-import { createBooking } from '@/services/bookings'
+import { useRouter } from 'next/navigation'
+import { useBookingStore } from '@/store/bookingStore'
 
 export default function BookingPage() {
-  const [form, setForm] = useState({
-    name: '',
-    email: '',
-    service: '',
-    booking_date: '',
-  })
+  const router = useRouter()
+  const { setBooking } = useBookingStore()
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault()
+  function continueBooking() {
+    setBooking({
+      service: 'Haircut',
+      date: '2026-05-20',
+      time: '14:00',
+      provider: 'John',
+    })
 
-    try {
-      await createBooking(form)
-      alert('Booking successful 🎉')
-    } catch (err: any) {
-      alert(err.message)
-    }
+    router.push('/signup')
   }
 
   return (
-    <div className="p-10 max-w-md mx-auto">
-      <h1 className="text-2xl mb-4">Book a Service</h1>
+    <main className="min-h-screen bg-[#f7f5f2] px-6 py-20">
+      <div className="max-w-5xl mx-auto bg-white rounded-[32px] p-10 shadow-xl">
+        <h1 className="text-5xl font-bold text-slate-900">
+          Book Appointment
+        </h1>
 
-      <form onSubmit={handleSubmit} className="space-y-3">
-        <input
-          placeholder="Name"
-          className="border p-2 w-full"
-          onChange={(e) => setForm({ ...form, name: e.target.value })}
-        />
+        <div className="grid md:grid-cols-3 gap-6 mt-10">
+          <div className="border rounded-3xl p-6 hover:border-blue-500 cursor-pointer">
+            <h3 className="text-2xl font-bold">Single</h3>
+            <p className="mt-3 text-slate-500">R250</p>
+          </div>
 
-        <input
-          placeholder="Email"
-          className="border p-2 w-full"
-          onChange={(e) => setForm({ ...form, email: e.target.value })}
-        />
+          <div className="border rounded-3xl p-6 hover:border-blue-500 cursor-pointer">
+            <h3 className="text-2xl font-bold">Monthly</h3>
+            <p className="mt-3 text-slate-500">R450</p>
+          </div>
 
-        <input
-          placeholder="Service (e.g haircut)"
-          className="border p-2 w-full"
-          onChange={(e) => setForm({ ...form, service: e.target.value })}
-        />
+          <div className="bg-slate-900 text-white rounded-3xl p-6">
+            <h3 className="text-2xl font-bold">Bi-weekly</h3>
+            <p className="mt-3 text-slate-300">R850</p>
+          </div>
+        </div>
 
-        <input
-          type="datetime-local"
-          className="border p-2 w-full"
-          onChange={(e) =>
-            setForm({ ...form, booking_date: e.target.value })
-          }
-        />
-
-        <button className="bg-black text-white p-2 w-full">
-          Book Now
+        <button
+          onClick={continueBooking}
+          className="mt-10 bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-2xl font-semibold"
+        >
+          Continue
         </button>
-      </form>
-    </div>
+      </div>
+    </main>
   )
 }

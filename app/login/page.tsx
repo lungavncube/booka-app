@@ -1,50 +1,60 @@
 'use client'
 
 import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
 import { useRouter } from 'next/navigation'
-import { signIn } from '@/services/auth'
 
 export default function LoginPage() {
   const router = useRouter()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
- 
-  const handleLogin = async (e: any) => {
-    e.preventDefault()
 
-    const { error } = await signIn(email, password)
+  async function handleLogin() {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
     if (error) {
       alert(error.message)
-    } else {
-      router.push('/dashboard')
+      return
     }
+
+    router.push('/dashboard')
   }
 
   return (
-    <div className="p-10 max-w-md mx-auto">
-      <h1 className="text-3xl mb-5">Login</h1>
+    <main className="min-h-screen flex items-center justify-center bg-slate-50 px-6">
+      <div className="bg-white w-full max-w-md rounded-[32px] p-10 shadow-xl border border-slate-200">
+        <h1 className="text-4xl font-bold text-slate-900">
+          Welcome back
+        </h1>
 
-      <form onSubmit={handleLogin} className="space-y-4">
-        <input
-          type="email"
-          placeholder="Email"
-          className="border p-2 w-full"
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <div className="mt-8 space-y-5">
+          <input
+            placeholder="Email"
+            className="w-full border border-slate-300 rounded-2xl px-5 py-4"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-        <input
-          type="password"
-          placeholder="Password"
-          className="border p-2 w-full"
-          onChange={(e) => setPassword(e.target.value)}
-        />
+          <input
+            type="password"
+            placeholder="Password"
+            className="w-full border border-slate-300 rounded-2xl px-5 py-4"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
 
-        <button className="bg-black text-white p-2 w-full">
-          Login
-        </button>
-      </form>
-    </div>
+          <button
+            onClick={handleLogin}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-semibold"
+          >
+            Login
+          </button>
+        </div>
+      </div>
+    </main>
   )
 }
